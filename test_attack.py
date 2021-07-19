@@ -50,15 +50,15 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
             #     seq = range(data.test_labels.shape[1])
             seq = 1000
             count = 0
-            for j in range(0, data.test_labels.shape[0]):
+            for j in range(0, data.train_data.shape[0]):
                 # if (j == np.argmax(data.test_labels[start+i])) and (inception == False):
                 #     continue
                 # print('ok')
                 # print(np.argmax(data.test_labels[i]))
-                if np.argmax(data.test_labels[j]) == 9.:
+                if np.argmax(data.train_data[j]) == 9.:
 
-                  inputs.append(data.test_data[start+i])
-                  targets.append(np.eye(data.test_labels.shape[1])[4])
+                  inputs.append(data.train_data[start+i])
+                  targets.append(np.eye(data.train_data.shape[1])[4])
                   count += 1
                 if count == 1000:
                   break
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         np.save('ori_lenet_v2.npy', ori)
         print(adv.shape)
         timeend = time.time()
-        
+
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
 
         for i in range(len(adv)):
