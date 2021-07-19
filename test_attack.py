@@ -58,7 +58,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                 if np.argmax(data.train_data[j]) == 9.:
 
                   inputs.append(data.train_data[start+i])
-                  targets.append(np.eye(data.train_data.shape[1])[4])
+                  targets.append(np.eye(data.train_data.shape[1])[7])
                   count += 1
                 if count == 1000:
                   break
