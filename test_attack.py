@@ -55,10 +55,10 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                 #     continue
                 # print('ok')
                 # print(np.argmax(data.test_labels[i]))
-                if np.argmax(data.train_data[j]) == 9.:
+                if np.argmax(data.train_labels[j]) == 9.:
 
                   inputs.append(data.train_data[start+i])
-                  targets.append(np.eye(data.train_data.shape[1])[7])
+                  targets.append(np.eye(data.train_labels.shape[1])[7])
                   count += 1
                 if count == 1000:
                   break
