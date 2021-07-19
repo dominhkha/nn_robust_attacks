@@ -131,11 +131,15 @@ class CarliniL2:
         If self.targeted is false, then targets are the original class labels.
         """
         r = []
+        r2 = []
         print('go up to',len(imgs))
         for i in range(0,len(imgs),self.batch_size):
             print('tick',i)
-            r.extend(self.attack_batch(imgs[i:i+self.batch_size], targets[i:i+self.batch_size]))
-        return np.array(r)
+            a, b = self.attack_batch(imgs[i:i+self.batch_size], targets[i:i+self.batch_size])
+            r.extend(a)
+            r2.extend(b)
+            # r.extend(self.attack_batch(imgs[i:i+self.batch_size], targets[i:i+self.batch_size]))
+        return np.array(r), np.array(r2)
 
     def attack_batch(self, imgs, labs):
         """
@@ -168,14 +172,14 @@ class CarliniL2:
         o_bestl2 = [1e10]*batch_size
         o_bestscore = [-1]*batch_size
         o_bestattack = [np.zeros(imgs[0].shape)]*batch_size
-        
+        k_bestattack = [np.zeros(imgs[0].shape)]*batch_size
         for outer_step in range(self.BINARY_SEARCH_STEPS):
             print(o_bestl2)
             # completely reset adam's internal state.
             self.sess.run(self.init)
             batch = imgs[:batch_size]
             batchlab = labs[:batch_size]
-    
+
             bestl2 = [1e10]*batch_size
             bestscore = [-1]*batch_size
 
@@ -187,19 +191,19 @@ class CarliniL2:
             self.sess.run(self.setup, {self.assign_timg: batch,
                                        self.assign_tlab: batchlab,
                                        self.assign_const: CONST})
-            
+
             prev = np.inf
             for iteration in range(self.MAX_ITERATIONS):
-                # perform the attack 
-                _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss, 
-                                                         self.l2dist, self.output, 
+                # perform the attack
+                _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss,
+                                                         self.l2dist, self.output,
                                                          self.newimg])
 
                 if np.all(scores>=-.0001) and np.all(scores <= 1.0001):
                     if np.allclose(np.sum(scores,axis=1), 1.0, atol=1e-3):
                         if not self.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK:
                             raise Exception("The output of model.predict should return the pre-softmax layer. It looks like you are returning the probability vector (post-softmax). If you are sure you want to do that, set attack.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = True")
-                
+
                 # print out the losses every 10%
                 if iteration%(self.MAX_ITERATIONS//10) == 0:
                     print(iteration,self.sess.run((self.loss,self.loss1,self.loss2)))
@@ -219,6 +223,7 @@ class CarliniL2:
                         o_bestl2[e] = l2
                         o_bestscore[e] = np.argmax(sc)
                         o_bestattack[e] = ii
+                        k_bestattack[e] = imgs[e]
 
             # adjust the constant as needed
             for e in range(batch_size):
@@ -238,4 +243,5 @@ class CarliniL2:
 
         # return the best solution found
         o_bestl2 = np.array(o_bestl2)
-        return o_bestattack
+        print('ok')
+        return o_bestattack, k_bestattack

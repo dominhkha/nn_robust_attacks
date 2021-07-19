@@ -7,10 +7,10 @@
 
 
 import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras.optimizers import SGD
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, InputLayer, BatchNormalization
+from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.optimizers import SGD
 
 import tensorflow as tf
 from setup_mnist import MNIST
@@ -21,31 +21,80 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
     """
     Standard neural network training procedure.
     """
+    # model = Sequential()
+
+    # print(data.train_data.shape)
+
+    # model.add(Conv2D(params[0], (3, 3),
+    #                         input_shape=data.train_data.shape[1:]))
+    # model.add(Activation('relu'))
+    # model.add(Conv2D(params[1], (3, 3)))
+    # model.add(Activation('relu'))
+    # model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # model.add(Conv2D(params[2], (3, 3)))
+    # model.add(Activation('relu'))
+    # model.add(Conv2D(params[3], (3, 3)))
+    # model.add(Activation('relu'))
+    # model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # model.add(Flatten())
+    # model.add(Dense(params[4]))
+    # model.add(Activation('relu'))
+    # model.add(Dropout(0.5))
+    # model.add(Dense(params[5]))
+    # model.add(Activation('relu'))
+    # model.add(Dense(10))
     model = Sequential()
+    model.add(InputLayer(input_shape=data.train_data.shape[1:]))
 
-    print(data.train_data.shape)
-    
-    model.add(Conv2D(params[0], (3, 3),
-                            input_shape=data.train_data.shape[1:]))
-    model.add(Activation('relu'))
-    model.add(Conv2D(params[1], (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # 1st Convolutional Layer
+    model.add(Conv2D(filters=96, kernel_size=(11, 11),
+                    strides=(4, 4), padding='same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
 
-    model.add(Conv2D(params[2], (3, 3)))
-    model.add(Activation('relu'))
-    model.add(Conv2D(params[3], (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # 2nd Convolutional Layer
+    model.add(Conv2D(filters=256, kernel_size=(5, 5),
+                    padding='same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
 
+    # 3rd Convolutional Layer
+    model.add(Conv2D(filters=384, kernel_size=(3, 3),
+                    padding='same', activation='relu'))
+    model.add(BatchNormalization())
+
+    # 4th Convolutional Layer
+    model.add(Conv2D(filters=384, kernel_size=(3, 3),
+                    padding='same', activation='relu'))
+    model.add(BatchNormalization())
+
+    # 5th Convolutional Layer
+    model.add(Conv2D(filters=256, kernel_size=(3, 3),
+                    padding='same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2),
+                          padding='same'))
+
+    #Passing into a Fully Connected layer
     model.add(Flatten())
-    model.add(Dense(params[4]))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(params[5]))
-    model.add(Activation('relu'))
-    model.add(Dense(10))
-    
+
+    # 1st Fully Connected Layer
+    model.add(Dense(units=4096,activation='relu'))
+    model.add(Dropout(0.4))
+
+    # 2nd Fully Connected Layer
+    model.add(Dense(units=4096, activation='relu'))
+    model.add(Dropout(0.4))
+
+    # 3rd Fully Connected Layer
+    model.add(Dense(units=1000, activation='relu'))
+    model.add(Dropout(0.4))
+
+    # 4th Output Layer
+    model.add(Dense(units=10, activation='softmax'))
+
     if init != None:
         model.load_weights(init)
 
@@ -54,17 +103,17 @@ def train(data, file_name, params, num_epochs=50, batch_size=128, train_temp=1, 
                                                        logits=predicted/train_temp)
 
     sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    
+
     model.compile(loss=fn,
                   optimizer=sgd,
                   metrics=['accuracy'])
-    
+
     model.fit(data.train_data, data.train_labels,
               batch_size=batch_size,
               validation_data=(data.validation_data, data.validation_labels),
-              nb_epoch=num_epochs,
+              epochs=1,
               shuffle=True)
-    
+
 
     if file_name != None:
         model.save(file_name)
@@ -82,7 +131,7 @@ def train_distillation(data, file_name, params, num_epochs=50, batch_size=128, t
     if not os.path.exists(file_name+"_init"):
         # Train for one epoch to get a good starting point.
         train(data, file_name+"_init", params, 1, batch_size)
-    
+
     # now train the teacher at the given temperature
     teacher = train(data, file_name+"_teacher", params, num_epochs, batch_size, train_temp,
                     init=file_name+"_init")
@@ -102,14 +151,14 @@ def train_distillation(data, file_name, params, num_epochs=50, batch_size=128, t
     predicted = student.predict(data.train_data)
 
     print(predicted)
-    
+
 if not os.path.isdir('models'):
     os.makedirs('models')
 
-train(CIFAR(), "models/cifar", [64, 64, 128, 128, 256, 256], num_epochs=50)
-train(MNIST(), "models/mnist", [32, 32, 64, 64, 200, 200], num_epochs=50)
+# train(CIFAR(), "models/cifar", [64, 64, 128, 128, 256, 256], num_epochs=50)
+train(MNIST(), "models/mnist", [32, 32, 64, 64, 200, 200], num_epochs=10)
 
-train_distillation(MNIST(), "models/mnist-distilled-100", [32, 32, 64, 64, 200, 200],
-                   num_epochs=50, train_temp=100)
-train_distillation(CIFAR(), "models/cifar-distilled-100", [64, 64, 128, 128, 256, 256],
-                   num_epochs=50, train_temp=100)
+# train_distillation(MNIST(), "models/mnist-distilled-100", [32, 32, 64, 64, 200, 200],
+                  #  num_epochs=30, train_temp=100)
+# train_distillation(CIFAR(), "models/cifar-distilled-100", [64, 64, 128, 128, 256, 256],
+                  #  num_epochs=50, train_temp=100)

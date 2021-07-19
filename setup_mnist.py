@@ -12,11 +12,11 @@ import pickle
 import gzip
 import urllib.request
 
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras.utils import np_utils
-from keras.models import load_model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
+from tensorflow.keras.layers import Conv2D, MaxPooling2D
+import np_utils
+from tensorflow.keras.models import load_model
 
 def extract_data(filename, num_images):
     with gzip.open(filename) as bytestream:
@@ -46,13 +46,24 @@ class MNIST:
 
                 urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/' + name, "data/"+name)
 
-        train_data = extract_data("data/train-images-idx3-ubyte.gz", 60000)
-        train_labels = extract_labels("data/train-labels-idx1-ubyte.gz", 60000)
-        self.test_data = extract_data("data/t10k-images-idx3-ubyte.gz", 10000)
-        self.test_labels = extract_labels("data/t10k-labels-idx1-ubyte.gz", 10000)
-        
-        VALIDATION_SIZE = 5000
-        
+        # train_data = extract_data("data/train-images-idx3-ubyte.gz", 60000)
+        # train_labels = extract_labels("data/train-labels-idx1-ubyte.gz", 60000)
+        # self.test_data = extract_data("data/t10k-images-idx3-ubyte.gz", 10000)
+        # self.test_labels = extract_labels("data/t10k-labels-idx1-ubyte.gz", 10000)
+
+
+        (train_data, train_labels), (self.test_data, self.test_labels) = tf.keras.datasets.mnist.load_data()
+
+        train_labels = (np.arange(10) == train_labels[:, None]).astype(np.float32)
+        self.test_labels = (np.arange(10) == self.test_labels[:, None]).astype(np.float32)
+
+        train_data = (train_data.astype(np.float32) / 255) - 0.5
+        self.test_data = (self.test_data.astype(np.float32) / 255) - 0.5
+
+        VALIDATION_SIZE = 1000
+
+        train_data = train_data.reshape(60000, 28, 28, 1)
+        self.test_data = self.test_data.reshape(10000, 28, 28, 1)
         self.validation_data = train_data[:VALIDATION_SIZE, :, :, :]
         self.validation_labels = train_labels[:VALIDATION_SIZE]
         self.train_data = train_data[VALIDATION_SIZE:, :, :, :]
@@ -65,30 +76,46 @@ class MNISTModel:
         self.image_size = 28
         self.num_labels = 10
 
-        model = Sequential()
+        # model = Sequential()
 
-        model.add(Conv2D(32, (3, 3),
-                         input_shape=(28, 28, 1)))
-        model.add(Activation('relu'))
-        model.add(Conv2D(32, (3, 3)))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        
-        model.add(Conv2D(64, (3, 3)))
-        model.add(Activation('relu'))
-        model.add(Conv2D(64, (3, 3)))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        
-        model.add(Flatten())
-        model.add(Dense(200))
-        model.add(Activation('relu'))
-        model.add(Dense(200))
-        model.add(Activation('relu'))
-        model.add(Dense(10))
-        model.load_weights(restore)
+        # model.add(Conv2D(32, (3, 3),
+        #                  input_shape=(28, 28, 1)))
+        # model.add(Activation('relu'))
+        # model.add(Conv2D(32, (3, 3)))
+        # model.add(Activation('relu'))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        self.model = model
+        # model.add(Conv2D(64, (3, 3)))
+        # model.add(Activation('relu'))
+        # model.add(Conv2D(64, (3, 3)))
+        # model.add(Activation('relu'))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        # model.add(Flatten())
+        # model.add(Dense(200))
+        # model.add(Activation('relu'))
+        # model.add(Dense(200))
+        # model.add(Activation('relu'))
+        # model.add(Dense(10))
+        # model.load_weights(restore)
+
+        # model = Sequential()
+        # model.add(Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=(28, 28, 1)))
+        # model.add(Conv2D(32, kernel_size=(3, 3), activation="relu"))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
+        # model.add(Conv2D(64, kernel_size=(3, 3), activation="relu"))
+        # model.add(Conv2D(64, kernel_size=(3, 3), activation="relu"))
+        # model.add(MaxPooling2D(pool_size=(2, 2)))
+        # model.add(Flatten())
+        # model.add(Dense(200, activation='relu'))
+        # model.add(Dropout(0.5))
+        # model.add(Dense(200, activation='relu'))
+        # model.add(Dropout(0.5))
+        # model.add(Dense(10, activation="relu"))
+        # model.load_weights(restore)
+        self.model = tf.keras.models.load_model('/content/gdrive/MyDrive/pre_trained_cnn_models/Alexnet.h5', compile=False)
+        self.model = tf.keras.models.Model(inputs=self.model.input,
+                                                   outputs=self.model.get_layer('dense_3').output)
 
     def predict(self, data):
         return self.model(data)

@@ -44,16 +44,24 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
     targets = []
     for i in range(samples):
         if targeted:
-            if inception:
-                seq = random.sample(range(1,1001), 10)
-            else:
-                seq = range(data.test_labels.shape[1])
+            # if inception:
+            #     seq = random.sample(range(1,1001), 10)
+            # else:
+            #     seq = range(data.test_labels.shape[1])
+            seq = 1000
+            count = 0
+            for j in range(0, data.test_labels.shape[0]):
+                # if (j == np.argmax(data.test_labels[start+i])) and (inception == False):
+                #     continue
+                # print('ok')
+                # print(np.argmax(data.test_labels[i]))
+                if np.argmax(data.test_labels[j]) == 9.:
 
-            for j in seq:
-                if (j == np.argmax(data.test_labels[start+i])) and (inception == False):
-                    continue
-                inputs.append(data.test_data[start+i])
-                targets.append(np.eye(data.test_labels.shape[1])[j])
+                  inputs.append(data.test_data[start+i])
+                  targets.append(np.eye(data.test_labels.shape[1])[7])
+                  count += 1
+                if count == 1000:
+                  break
         else:
             inputs.append(data.test_data[start+i])
             targets.append(data.test_labels[start+i])
@@ -68,14 +76,22 @@ if __name__ == "__main__":
     with tf.Session() as sess:
         data, model =  MNIST(), MNISTModel("models/mnist", sess)
         #data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        attack = CarliniL2(sess, model, batch_size=9, max_iterations=1000, confidence=0)
+        attack = CarliniL2(sess, model, batch_size=10, max_iterations=1000, confidence=0)
         #attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
         #                   largest_const=15)
 
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)
+        print(targets.shape)
+        print(inputs.shape)
+        # print(data.train_labels.shape)
+        # inputs = data.train_data[:1000]
+        # targets = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]*1000])
         timestart = time.time()
-        adv = attack.attack(inputs, targets)
+        adv, ori = attack.attack(inputs, targets)
+        np.save('adv_alexnet.npy', adv)
+        np.save('ori_lenet.npy', ori)
+        print(adv.shape)
         timeend = time.time()
         
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
