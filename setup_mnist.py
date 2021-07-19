@@ -113,7 +113,7 @@ class MNISTModel:
         # model.add(Dropout(0.5))
         # model.add(Dense(10, activation="relu"))
         # model.load_weights(restore)
-        self.model = tf.keras.models.load_model('/models/Alexnet.h5', compile=False)
+        self.model = tf.keras.models.load_model('models/Alexnet.h5', compile=False)
         self.model = tf.keras.models.Model(inputs=self.model.input,
                                                    outputs=self.model.get_layer('dense_3').output)
 
