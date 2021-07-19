@@ -113,9 +113,15 @@ class MNISTModel:
         # model.add(Dropout(0.5))
         # model.add(Dense(10, activation="relu"))
         # model.load_weights(restore)
-        self.model = tf.keras.models.load_model('models/Lenet_v2.h5', compile=False)
-        self.model = tf.keras.models.Model(inputs=self.model.input,
-                                                   outputs=self.model.get_layer('pre_softmax_layer').output)
+        # self.model = tf.keras.models.load_model('models/Lenet_v2.h5', compile=False)
+        # self.model = tf.keras.models.Model(inputs=self.model.input,
+        #                                            outputs=self.model.get_layer('pre_softmax_layer').output)
+
+        with open('models/Lenet_v2.json') as json_file:
+            json_config = json_file.read()
+            new_model = tf.keras.models.model_from_json(json_config)
+        new_model.load_weights('models/Lenet_v2_weights.h5')
+        self.model = new_model
 
     def predict(self, data):
         return self.model(data)
