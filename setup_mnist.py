@@ -115,7 +115,7 @@ class MNISTModel:
         # model.load_weights(restore)
         self.model = tf.keras.models.load_model('models/lenet_v21.h5', compile=False)
         self.model = tf.keras.models.Model(inputs=self.model.input,
-                                                   outputs=self.model.get_layer('dense_5').output)
+                                                   outputs=self.model.get_layer('dense_2').output)
 
         # with open('models/Lenet_v2.json') as json_file:
         #     json_config = json_file.read()
