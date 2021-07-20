@@ -58,7 +58,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                 if np.argmax(data.train_labels[j]) == 9.:
 
                   inputs.append(data.train_data[j])
-                  targets.append(np.eye(data.train_labels.shape[1])[7])
+                  targets.append(np.eye(data.train_labels.shape[1])[4])
                   count += 1
                 if count == 1000:
                   break
@@ -89,8 +89,8 @@ if __name__ == "__main__":
         # targets = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]*1000])
         timestart = time.time()
         adv, ori = attack.attack(inputs, targets)
-        np.save('adv_lenet_v2.npy', adv)
-        np.save('ori_lenet_v2.npy', ori)
+        np.save('adv_lenet_v21.npy', adv)
+        np.save('ori_lenet_v21.npy', ori)
         print(adv.shape)
         timeend = time.time()
 
