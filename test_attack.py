@@ -48,7 +48,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
             #     seq = random.sample(range(1,1001), 10)
             # else:
             #     seq = range(data.test_labels.shape[1])
-            seq = 20
+            seq = 1000
             count = 0
             for j in range(0, data.train_data.shape[0]):
                 # if (j == np.argmax(data.test_labels[start+i])) and (inception == False):
