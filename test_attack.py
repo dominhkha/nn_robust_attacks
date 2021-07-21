@@ -60,7 +60,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                   inputs.append(data.train_data[j])
                   targets.append(np.eye(data.train_labels.shape[1])[7])
                   count += 1
-                if count == 1000:
+                if count == seq:
                   break
         else:
             inputs.append(data.test_data[start+i])
