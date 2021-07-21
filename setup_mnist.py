@@ -23,7 +23,7 @@ def extract_data(filename, num_images):
         bytestream.read(16)
         buf = bytestream.read(num_images*28*28)
         data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
-        data = (data / 255) - 0.5
+        data = data / 255.
         data = data.reshape(num_images, 28, 28, 1)
         return data
 
@@ -57,8 +57,8 @@ class MNIST:
         train_labels = (np.arange(10) == train_labels[:, None]).astype(np.float32)
         self.test_labels = (np.arange(10) == self.test_labels[:, None]).astype(np.float32)
 
-        train_data = (train_data.astype(np.float32) / 255) - 0.5
-        self.test_data = (self.test_data.astype(np.float32) / 255) - 0.5
+        train_data = train_data.astype(np.float32) / 255
+        self.test_data = self.test_data.astype(np.float32)
 
         VALIDATION_SIZE = 1000
 
