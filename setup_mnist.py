@@ -8,24 +8,19 @@
 import tensorflow as tf
 import numpy as np
 import os
-import pickle
 import gzip
 import urllib.request
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
-import np_utils
-from tensorflow.keras.models import load_model
 
 def extract_data(filename, num_images):
     with gzip.open(filename) as bytestream:
         bytestream.read(16)
-        buf = bytestream.read(num_images*28*28)
+        buf = bytestream.read(num_images * 28 * 28)
         data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
         data = data / 255.
         data = data.reshape(num_images, 28, 28, 1)
         return data
+
 
 def extract_labels(filename, num_images):
     with gzip.open(filename) as bytestream:
@@ -33,6 +28,7 @@ def extract_labels(filename, num_images):
         buf = bytestream.read(1 * num_images)
         labels = np.frombuffer(buf, dtype=np.uint8)
     return (np.arange(10) == labels[:, None]).astype(np.float32)
+
 
 class MNIST:
     def __init__(self):
@@ -50,7 +46,6 @@ class MNIST:
         # train_labels = extract_labels("data/train-labels-idx1-ubyte.gz", 60000)
         # self.test_data = extract_data("data/t10k-images-idx3-ubyte.gz", 10000)
         # self.test_labels = extract_labels("data/t10k-labels-idx1-ubyte.gz", 10000)
-
 
         (train_data, train_labels), (self.test_data, self.test_labels) = tf.keras.datasets.mnist.load_data()
 
@@ -113,9 +108,13 @@ class MNISTModel:
         # model.add(Dropout(0.5))
         # model.add(Dense(10, activation="relu"))
         # model.load_weights(restore)
-        self.model = tf.keras.models.load_model('models/lenet_v21.h5', compile=False)
+        # self.model = tf.keras.models.load_model('models/lenet_v21.h5', compile=False)
+        # self.model = tf.keras.models.Model(inputs=self.model.input,
+        #                                            outputs=self.model.get_layer('dense_2').output)
+
+        self.model = tf.keras.models.load_model('models/Alexnet.h5', compile=False)
         self.model = tf.keras.models.Model(inputs=self.model.input,
-                                                   outputs=self.model.get_layer('dense_2').output)
+                                           outputs=self.model.get_layer('dense_3').output)
 
         # with open('models/Lenet_v2.json') as json_file:
         #     json_config = json_file.read()
