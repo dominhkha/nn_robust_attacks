@@ -136,7 +136,9 @@ class CarliniL0:
             try:
                 imgs = np.arctanh(np.array(oimgs)*1.999999)
                 starts = np.arctanh(np.array(starts)*1.999999)
-            except RuntimeWarning:
+            except Warning:
+                return None
+            except Exception:
                 return None
 
             # initialize the variables
