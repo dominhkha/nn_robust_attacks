@@ -95,7 +95,7 @@ if __name__ == "__main__":
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('alexnet.txt', 'w')
+        f = open('lenet.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         text += '\nsuccess_rate: ' + str(adv.shape[0])
         f.write('time: ' + str(timeend-timestart))
