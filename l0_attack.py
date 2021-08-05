@@ -191,8 +191,9 @@ class CarliniL0:
         for i,(img,target) in enumerate(zip(imgs, targets)):
             print("Attack iteration",i)
             a, b = self.attack_single(img, target)
-            r.extend(a)
-            r2.extend(b)
+            if a is not None:
+                r.extend(a)
+                r2.extend(b)
         return np.array(r), np.array(r2)
 
     def attack_single(self, img, target):
@@ -221,7 +222,7 @@ class CarliniL0:
             if res == None:
                 # the attack failed, we return this as our final answer
                 print("Final answer",equal_count)
-                return last_solution, [origin]
+                return None, None
     
             # the attack succeeded, now we pick new pixels to set to 0
             restarted = False
