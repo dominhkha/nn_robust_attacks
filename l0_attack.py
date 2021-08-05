@@ -6,9 +6,8 @@
 ## contained in the LICENCE file in this directory.
 from __future__ import print_function
 
-import sys
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 
 MAX_ITERATIONS = 1000   # number of iterations to perform gradient descent
 ABORT_EARLY = True      # abort gradient descent upon first valid solution
@@ -217,8 +216,12 @@ class CarliniL0:
     
         while True:
             # try to solve given this valid map
-            res = self.grad([np.copy(img)], [target], np.copy(prev), 
+            res = None
+            try:
+                res = self.grad([np.copy(img)], [target], np.copy(prev),
                        valid, const)
+            except:
+                res = None
             if res == None:
                 # the attack failed, we return this as our final answer
                 print("Final answer",equal_count)
