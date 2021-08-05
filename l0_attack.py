@@ -221,7 +221,7 @@ class CarliniL0:
             if res == None:
                 # the attack failed, we return this as our final answer
                 print("Final answer",equal_count)
-                return last_solution
+                return last_solution, [origin]
     
             # the attack succeeded, now we pick new pixels to set to 0
             restarted = False
