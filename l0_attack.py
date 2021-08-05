@@ -62,7 +62,7 @@ class CarliniL0:
         self.const_factor = const_factor
         self.independent_channels = independent_channels
 
-        self.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = False
+        self.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = True
 
         self.grad = self.gradient_descent(sess, model)
 
@@ -161,7 +161,7 @@ class CarliniL0:
                     _, works, scores = sess.run([train, loss1, output], feed_dict=feed_dict)
 
                     if np.all(scores>=-.0001) and np.all(scores <= 1.0001):
-                        print(self.model.model.summary())
+                        # print(self.model.model.summary())
                         if np.allclose(np.sum(scores,axis=1), 1.0, atol=1e-3):
                             if not self.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK:
                                 raise Exception("The output of model.predict should return the pre-softmax layer. It looks like you are returning the probability vector (post-softmax). If you are sure you want to do that, set attack.I_KNOW_WHAT_I_AM_DOING_AND_WANT_TO_OVERRIDE_THE_PRESOFTMAX_CHECK = True")
@@ -187,16 +187,19 @@ class CarliniL0:
         If self.targeted is false, then targets are the original class labels.
         """
         r = []
+        r2 = []
         for i,(img,target) in enumerate(zip(imgs, targets)):
             print("Attack iteration",i)
-            r.extend(self.attack_single(img, target))
-        return np.array(r)
+            a, b = self.attack_single(img, target)
+            r.extend(a)
+            r2.extend(b)
+        return np.array(r), np.array(r2)
 
     def attack_single(self, img, target):
         """
         Run the attack on a single image and label
         """
-
+        origin = np.array(img)
         # the pixels we can change
         valid = np.ones((1,self.model.image_size,self.model.image_size,self.model.num_channels))
 
@@ -230,7 +233,7 @@ class CarliniL0:
                   "Equal count:",equal_count)
             if np.sum(valid) == 0:
                 # if no pixels changed, return 
-                return [img]
+                return [img], [origin]
     
             if self.independent_channels:
                 # we are allowed to change each channel independently
