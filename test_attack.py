@@ -89,8 +89,8 @@ if __name__ == "__main__":
         # targets = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]*1000])
         timestart = time.time()
         adv, ori = attack.attack(inputs, targets)
-        np.save('adv_lenet.npy', adv)
-        np.save('ori_lenet.npy', ori)
+        np.save('adv_lenet21.npy', adv)
+        np.save('ori_lenet21.npy', ori)
         print(adv.shape)
         timeend = time.time()
 

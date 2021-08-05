@@ -133,8 +133,11 @@ class CarliniL0:
         
         def doit(oimgs, labs, starts, valid, CONST):
             # convert to tanh-space
-            imgs = np.arctanh(np.array(oimgs)*1.999999)
-            starts = np.arctanh(np.array(starts)*1.999999)
+            try:
+                imgs = np.arctanh(np.array(oimgs)*1.999999)
+                starts = np.arctanh(np.array(starts)*1.999999)
+            except RuntimeWarning:
+                return None
 
             # initialize the variables
             sess.run(init)
