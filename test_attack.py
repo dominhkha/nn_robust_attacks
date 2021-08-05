@@ -76,9 +76,9 @@ if __name__ == "__main__":
     with tf.Session() as sess:
         data, model =  MNIST(), MNISTModel("models/mnist", sess)
         #data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        attack = CarliniL2(sess, model, batch_size=10, max_iterations=1000, confidence=0)
-        #attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
-        #                   largest_const=15)
+        # attack = CarliniL2(sess, model, batch_size=10, max_iterations=1000, confidence=0)
+        attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
+                          largest_const=15)
 
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)
@@ -95,6 +95,10 @@ if __name__ == "__main__":
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
+        f = open('lenet.txt', 'w')
+        text = 'time: ' + str(timeend - timestart)
+        text += '\nsuccess_rate: ' + str(adv.shape[0])
+        f.write('time: ' + str(timeend-timestart))
 
         for i in range(len(adv)):
             print("Valid:")
@@ -105,3 +109,4 @@ if __name__ == "__main__":
             print("Classification:", model.model.predict(adv[i:i+1]))
 
             print("Total distortion:", np.sum((adv[i]-inputs[i])**2)**.5)
+
