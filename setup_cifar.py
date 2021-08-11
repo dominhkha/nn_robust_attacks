@@ -72,8 +72,8 @@ class CIFAR:
         #
         # self.test_data, self.test_labels = load_batch("cifar-10-batches-bin/test_batch.bin")
         #
-        train_data = np.load('/home/khamd/hpba/data/cifar/cifar10_training.npy')
-        train_labels = np.load('/home/khamd/hpba/data/cifar/cifar10_training.npy')
+        train_data = np.load('../hpba/data/cifar/cifar10_training.npy')
+        train_labels = np.load('../khamd/hpba/data/cifar/cifar10_training.npy')
         VALIDATION_SIZE = 5000
         #
         # self.train_data = train_data[:, :, :, :]
@@ -118,7 +118,7 @@ class CIFARModel:
         # model.load_weights(restore)
         #
         # self.model = model
-        self.model = tf.keras.models.load_model('/home/khamd/hpba/src/classifier/pre-trained/models/cifar_lenet.h5', compile=False)
+        self.model = tf.keras.models.load_model('../hpba/src/classifier/pre-trained/models/cifar_lenet.h5', compile=False)
         self.model = tf.keras.models.Model(inputs=self.model.input,
                                            outputs=self.model.get_layer('pre_softmax_layer').output)
 
