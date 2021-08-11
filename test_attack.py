@@ -89,13 +89,13 @@ if __name__ == "__main__":
         # targets = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]*1000])
         timestart = time.time()
         adv, ori = attack.attack(inputs, targets)
-        np.save('adv_lenet_cifar.npy', adv)
-        np.save('ori_lenet_cifar.npy', ori)
+        np.save('adv_alexnet_cifar.npy', adv)
+        np.save('ori_alexnet_cifar.npy', ori)
         print(adv.shape)
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('lenet_cifar.txt', 'w')
+        f = open('alexnet_cifar.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         if adv is not None:
             text += '\nsuccess_rate: ' + str(adv.shape[0])
