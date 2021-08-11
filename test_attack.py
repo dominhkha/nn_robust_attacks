@@ -74,11 +74,11 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
 
 if __name__ == "__main__":
     with tf.Session() as sess:
-        data, model =  MNIST(), MNISTModel("models/mnist", sess)
-        #data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        # attack = CarliniL2(sess, model, batch_size=10, max_iterations=1000, confidence=0)
-        attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
-                          largest_const=15)
+        # data, model =  MNIST(), MNISTModel("models/mnist", sess)
+        data, model =  CIFAR(), CIFARModel("models/cifar", sess)
+        attack = CarliniL2(sess, model, batch_size=10, max_iterations=1000, confidence=0)
+        # attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
+        #                   largest_const=15)
 
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)
@@ -89,16 +89,19 @@ if __name__ == "__main__":
         # targets = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]*1000])
         timestart = time.time()
         adv, ori = attack.attack(inputs, targets)
-        np.save('adv_lenet21.npy', adv)
-        np.save('ori_lenet21.npy', ori)
+        np.save('adv_lenet_cifar.npy', adv)
+        np.save('ori_lenet_cifar.npy', ori)
         print(adv.shape)
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('lenet.txt', 'w')
+        f = open('lenet_cifar.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
-        text += '\nsuccess_rate: ' + str(adv.shape[0])
-        f.write('time: ' + str(timeend-timestart))
+        if adv is not None:
+            text += '\nsuccess_rate: ' + str(adv.shape[0])
+        else:
+            text += '\nsuccess_rate: 0'
+        f.write(text)
 
         for i in range(len(adv)):
             print("Valid:")
