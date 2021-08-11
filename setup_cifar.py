@@ -73,7 +73,7 @@ class CIFAR:
         # self.test_data, self.test_labels = load_batch("cifar-10-batches-bin/test_batch.bin")
         #
         train_data = np.load('../hpba/data/cifar/cifar10_training.npy')
-        train_labels = np.load('../khamd/hpba/data/cifar/cifar10_training.npy')
+        train_labels = np.load('../hpba/data/cifar/cifar10_label.npy')
         VALIDATION_SIZE = 5000
         #
         # self.train_data = train_data[:, :, :, :]
