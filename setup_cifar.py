@@ -118,7 +118,7 @@ class CIFARModel:
         # model.load_weights(restore)
         #
         # self.model = model
-        self.model = tf.keras.models.load_model('../hpba/src/classifier/pre-trained/models/cifar_lenet.h5', compile=False)
+        self.model = tf.keras.models.load_model('../hpba/src/classifier/pre-trained/cifar_lenet.h5', compile=False)
         self.model = tf.keras.models.Model(inputs=self.model.input,
                                            outputs=self.model.get_layer('pre_softmax_layer').output)
 
