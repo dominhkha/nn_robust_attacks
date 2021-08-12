@@ -48,7 +48,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
             #     seq = random.sample(range(1,1001), 10)
             # else:
             #     seq = range(data.test_labels.shape[1])
-            seq = 1000
+            seq = 4000
             count = 0
             for j in range(0, data.train_data.shape[0]):
                 # if (j == np.argmax(data.test_labels[start+i])) and (inception == False):
@@ -89,13 +89,13 @@ if __name__ == "__main__":
         # targets = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]*1000])
         timestart = time.time()
         adv, ori = attack.attack(inputs, targets)
-        np.save('adv_alexnet_cifar.npy', adv)
-        np.save('ori_alexnet_cifar.npy', ori)
+        np.save('adv_alexnet_cifar_4k.npy', adv)
+        np.save('ori_alexnet_cifar_4k.npy', ori)
         print(adv.shape)
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('alexnet_cifar.txt', 'w')
+        f = open('alexnet_cifar_4k.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         if adv is not None:
             text += '\nsuccess_rate: ' + str(adv.shape[0])
