@@ -97,13 +97,13 @@ if __name__ == "__main__":
                 new_adv.append(adv[index])
         new_ori = np.asarray(new_ori)
         new_adv = np.asarray(new_adv)
-        np.save('adv_alexnet_cifar_1kv2.npy', new_adv)
-        np.save('ori_alexnet_cifar_1kv2.npy', new_ori)
+        np.save('adv_lenet_cifar_1kv2.npy', new_adv)
+        np.save('ori_lenet_cifar_1kv2.npy', new_ori)
         print(adv.shape)
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('alexnet_cifarv2.txt', 'w')
+        f = open('lenet_cifarv2.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         if adv is not None:
             text += '\nsuccess_rate: ' + str(adv.shape[0])
