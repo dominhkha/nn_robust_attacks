@@ -58,7 +58,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                 if np.argmax(data.train_labels[j]) == 9.:
 
                   inputs.append(data.train_data[j])
-                  targets.append(np.eye(data.train_labels.shape[1])[4])
+                  targets.append(np.eye(data.train_labels.shape[1])[7])
                   count += 1
                 if count == seq:
                   break
@@ -97,13 +97,13 @@ if __name__ == "__main__":
                 new_adv.append(adv[index])
         new_ori = np.asarray(new_ori)
         new_adv = np.asarray(new_adv)
-        np.save('adv_lenet_cifar_1kv2.npy', new_adv)
-        np.save('ori_lenet_cifar_1kv2.npy', new_ori)
+        np.save('adv_alexnet_cifar_1kv2.npy', new_adv)
+        np.save('ori_alexnet_cifar_1kv2.npy', new_ori)
         print(adv.shape)
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('lenet_cifarv2.txt', 'w')
+        f = open('alexnet_cifarv2.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         if adv is not None:
             text += '\nsuccess_rate: ' + str(adv.shape[0])
