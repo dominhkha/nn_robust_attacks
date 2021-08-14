@@ -159,7 +159,7 @@ class CarliniL2:
                 return x != y
 
         batch_size = self.batch_size
-
+        new_imgs = np.array(imgs)
         # convert to tanh-space
         imgs = np.arctanh((imgs - self.boxplus) / self.boxmul * 0.999999)
 
@@ -223,7 +223,7 @@ class CarliniL2:
                         o_bestl2[e] = l2
                         o_bestscore[e] = np.argmax(sc)
                         o_bestattack[e] = ii
-                        k_bestattack[e] = imgs[e]
+                        k_bestattack[e] = new_imgs[e]
 
             # adjust the constant as needed
             for e in range(batch_size):
