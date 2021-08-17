@@ -118,10 +118,10 @@ class CIFARModel:
         # model.load_weights(restore)
         #
         # self.model = model
-        with open('../hpba/src/classifier/pre-trained/cifar_alexnet_json.json') as json_file:
+        with open('../hpba/src/classifier/pre-trained/cifar_lenet_json.json') as json_file:
             json_config = json_file.read()
         self.model = tf.keras.models.model_from_json(json_config)
-        self.model.load_weights('../hpba/src/classifier/pre-trained/cifar_alexnet_weight.h5')
+        self.model.load_weights('../hpba/src/classifier/pre-trained/cifar_lenet_weight.h5')
 
         # self.model = tf.keras.models.load_model('../hpba/src/classifier/pre-trained/cifar_alexnet.h5', compile=False)
         self.model = tf.keras.models.Model(inputs=self.model.input,

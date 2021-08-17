@@ -58,7 +58,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                 if np.argmax(data.train_labels[j]) == 9.:
 
                   inputs.append(data.train_data[j])
-                  targets.append(np.eye(data.train_labels.shape[1])[7])
+                  targets.append(np.eye(data.train_labels.shape[1])[4])
                   count += 1
                 if count == seq:
                   break
@@ -74,8 +74,8 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
 
 if __name__ == "__main__":
     with tf.Session() as sess:
-        data, model =  MNIST(), MNISTModel("models/mnist", sess)
-        # data, model =  CIFAR(), CIFARModel("models/cifar", sess)
+        # data, model =  MNIST(), MNISTModel("models/mnist", sess)
+        data, model =  CIFAR(), CIFARModel("models/cifar", sess)
         attack = CarliniL2(sess, model, batch_size=100, max_iterations=1000, confidence=0)
         # attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
         #                   largest_const=15)
@@ -93,17 +93,20 @@ if __name__ == "__main__":
         new_ori = []
         for index in range(len(adv)):
             if ori[index] is not None and np.sum(ori[index]) != 0:
-                new_ori.append(ori[index])
-                new_adv.append(adv[index])
+                if np.argmax(model.predict(np.asarray(adv[index].reshape(32, 32, 3)))[0]) == 4:
+                    new_ori.append(ori[index])
+                    new_adv.append(adv[index])
         new_ori = np.asarray(new_ori)
         new_adv = np.asarray(new_adv)
-        np.save('adv_alexnet_mnist_1kv2.npy', new_adv)
-        np.save('ori_alexnet_mnist_1kv2.npy', new_ori)
+        # np.save('adv_alexnet_mnist_1kv2.npy', new_adv)
+        # np.save('ori_alexnet_mnist_1kv2.npy', new_ori)
+        # np.save('adv_lenet_cifar_1kv2.npy', new_adv)
+        # np.save('ori_lenet_cifar_1kv2.npy', new_ori)
         print(adv.shape)
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('alexnet_mnist.txt', 'w')
+        f = open('lenet_cifar.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         if adv is not None:
             text += '\nsuccess_rate: ' + str(adv.shape[0])
