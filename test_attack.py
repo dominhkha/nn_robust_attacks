@@ -58,7 +58,7 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
                 if np.argmax(data.train_labels[j]) == 9.:
 
                   inputs.append(data.train_data[j])
-                  targets.append(np.eye(data.train_labels.shape[1])[4])
+                  targets.append(np.eye(data.train_labels.shape[1])[7])
                   count += 1
                 if count == seq:
                   break
@@ -74,11 +74,12 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
 
 if __name__ == "__main__":
     with tf.Session() as sess:
-        # data, model =  MNIST(), MNISTModel("models/mnist", sess)
-        data, model =  CIFAR(), CIFARModel("models/cifar", sess)
-        attack = CarliniL2(sess, model, batch_size=100, max_iterations=1000, confidence=0)
+        data, model =  MNIST(), MNISTModel("models/mnist", sess)
+        # data, model =  CIFAR(), CIFARModel("models/cifar", sess)
+        # attack = CarliniL2(sess, model, batch_size=100, max_iterations=1000, confidence=0)
         # attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10,
         #                   largest_const=15)
+        attack = CarliniL0(sess, model, max_iterations=1000, initial_const=10, largest_const=15)
 
         inputs, targets = generate_data(data, samples=1, targeted=True,
                                         start=0, inception=False)
@@ -106,7 +107,7 @@ if __name__ == "__main__":
         timeend = time.time()
 
         print("Took",timeend-timestart,"seconds to run",len(inputs),"samples.")
-        f = open('lenet_cifar.txt', 'w')
+        f = open('alexnet_mnist.txt', 'w')
         text = 'time: ' + str(timeend - timestart)
         if adv is not None:
             text += '\nsuccess_rate: ' + str(adv.shape[0])
